@@ -45,5 +45,6 @@ Docs: https://docs.expo.dev/eas/index.md
 - The app is a WebView around `web/career-quest.html` (a Claude artifact, kept verbatim). Never hand-edit `src/webHtml.js`; edit `web/bridge.js` or the `PATCHES` list in `scripts/build-web.mjs`, then run `npm run build:web`.
 - `web/bridge.js` re-implements the artifact runtime's `window.claude.use('db' | 'user')` on Firebase compat (anonymous auth + Firestore), so the artifact's online code path runs unchanged. Owner = a doc at `admins/{uid}`.
 - Firestore rules live in `firebase/firestore.rules` and must stay in sync with the paths the artifact uses: `players/{uid}`, `players/{uid}/log/{id}`, `mod/state`, `reports/{uid}`, `requests/{uid}`, `replies/{uid}`, `data/users/{uid}/safety`.
+- `docs/index.html` is the public support / terms / privacy page, served by GitHub Pages (`main` branch, `/docs`) and registered as the Support URL and Privacy Policy URL in App Store Connect. Keep its terms and privacy text identical to the in-app text (`termsHtml` / `privacyHtml` in the artifact, after `PATCHES`).
 - iOS only (`supportsTablet: false`). Local notifications only (`enableRemoteNotifications: false`), no push entitlement.
 - The owner builds and submits from an iPhone via Expo Launch (no Mac, no terminal), so the repo must stay buildable as-is from GitHub.
