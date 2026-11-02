@@ -1,0 +1,79 @@
+rules_version = '2';
+
+// キャリアクエストのFirestoreルール
+// Firebaseの画面「Firestore Database」→「ルール」に、このファイルの中身をそのまま貼って「公開」する。
+//
+// オーナー（通報の確認・ご要望への返事ができる人）は、
+// admins コレクションに「自分のユーザーID」という名前のドキュメントがある人。
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isMe(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    function isOwner() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    // 名前の長さなど、明らかにおかしいデータを受け付けない
+    function okPlayer(d) {
+      return d.keys().size() <= 60
+        && (!('name' in d) || (d.name is string && d.name.size() <= 16))
+        && (!('total' in d) || (d.total is number && d.total >= 0 && d.total <= 10000000));
+    }
+    function okLog(d) {
+      return d.keys().size() <= 30
+        && (!('did' in d) || (d.did is string && d.did.size() <= 600))
+        && (!('learned' in d) || (d.learned is string && d.learned.size() <= 600))
+        && (!('pts' in d) || (d.pts is number && d.pts >= 0 && d.pts <= 100000));
+    }
+
+    // オーナーの印。自分の分だけ「あるかどうか」を確かめられる。書き込みはFirebaseの画面からだけ。
+    match /admins/{uid} {
+      allow get: if isMe(uid);
+      allow list, write: if false;
+    }
+
+    // ランキングと実績書。ログインしている人は誰でも見られ、書けるのは本人だけ。
+    match /players/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isMe(uid) && okPlayer(request.resource.data);
+      allow delete: if isMe(uid);
+
+      match /log/{logId} {
+        allow read: if signedIn();
+        allow create, update: if isMe(uid) && okLog(request.resource.data);
+        allow delete: if isMe(uid);
+      }
+    }
+
+    // 非表示にした記録・ユーザーの一覧。みんなが読み、オーナーだけが書く。
+    match /mod/{docId} {
+      allow read: if signedIn();
+      allow write: if isOwner();
+    }
+
+    // 通報・ご要望。本人が書き、本人とオーナーが読む。
+    match /reports/{uid} {
+      allow read: if isMe(uid) || isOwner();
+      allow write: if isMe(uid);
+    }
+    match /requests/{uid} {
+      allow read: if isMe(uid) || isOwner();
+      allow write: if isMe(uid);
+    }
+
+    // ご要望への返事。オーナーが書き、本人とオーナーが読む（本人は削除のときに使う）。
+    match /replies/{uid} {
+      allow read: if isMe(uid) || isOwner();
+      allow write: if isMe(uid) || isOwner();
+    }
+
+    // ブロックの一覧など、本人だけのデータ（オーナーも見られない）
+    match /data/users/{uid}/{docId} {
+      allow read, write: if isMe(uid);
+    }
+  }
+}

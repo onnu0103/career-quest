@@ -1,0 +1,25 @@
+{
+  "name": "career-quest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "expo": "~58.0.22",
+    "expo-haptics": "~58.0.7",
+    "expo-notifications": "~58.1.7",
+    "expo-splash-screen": "~58.0.12",
+    "expo-status-bar": "~58.0.4",
+    "expo-system-ui": "~58.0.7",
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-webview": "14.0.1"
+  },
+  "scripts": {
+    "start": "expo start",
+    "build:web": "node scripts/build-web.mjs",
+    "ios": "expo start --ios"
+  },
+  "private": true,
+  "devDependencies": {
+    "firebase": "13.1.0"
+  }
+}

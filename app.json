@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "CareerQuest",
+    "slug": "career-quest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#f2f3ee",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.onnu0103.careerquest",
+      "infoPlist": {
+        "CFBundleDisplayName": "キャリアクエスト",
+        "CFBundleDevelopmentRegion": "ja",
+        "CFBundleLocalizations": [
+          "ja"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "enableRemoteNotifications": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#2638b8"
+        }
+      ]
+    ]
+  }
+}
